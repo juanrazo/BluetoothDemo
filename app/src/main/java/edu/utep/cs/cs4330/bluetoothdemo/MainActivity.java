@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private ConnectThread connectThread;
     private AcceptThread acceptThread;
     private NetworkAdapter networkAdapter;
-    Button send;
+    private Message listener;
+    private Button send;
 
     public void turnBluetoothOff(View view){
         BA.disable();
@@ -107,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         send = (Button) findViewById(R.id.send);
+        listener = new Message();
         if(BA.isEnabled()){
             Toast.makeText(getApplicationContext(), "Bluetooth is on", Toast.LENGTH_LONG).show();
         } else {
@@ -192,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
 //            // Do work to manage the connection (in a separate thread)
 //            manageConnectedSocket(mmSocket);
             networkAdapter = new NetworkAdapter(mmSocket);
+            networkAdapter.setMessageListener(listener);
         }
 
         /** Will cancel an in-progress connection, and close the socket */
@@ -234,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
                     // Do work to manage the connection (in a separate thread)
                     BluetoothDevice device = socket.getRemoteDevice();
                     networkAdapter = new NetworkAdapter(socket);
+                    networkAdapter.setMessageListener(listener);
                     Log.i("RemoteDevice", device.getName());
                     while(state==RECIEVE){
                         Log.i("Main", "Recieve");
